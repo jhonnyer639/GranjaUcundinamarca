@@ -3,64 +3,77 @@ from tkinter import *
 import tkinter as tk
 
 from PIL import ImageTk , Image
+from PIL import *
 import pyodbc
 
-def Ganad():
-    pass
-def Cultivo():
-    pass
-def Total():
-    pass
+
+class Aplicacion(tk.Tk):
+    def Ganad(self):
+        print('hello')
+        pass
+    def Cultivo(self):
+        pass
+    def Total(self):
+        pass
 
 
-def main():
-    VPrinsipal = tk.Tk()
-    VPrinsipal.title('Granja Ucundinamarca')
-    VPrinsipal.state('zoomed')
+    def Crear_widgets(self):
+        #self.VPrinsipal = tk.Tk()
+        #self.VPrinsipal.title('Granja Ucundinamarca')
+        #self.VPrinsipal.state('zoomed')
 
-    ##################################################
-    FrameHead = tk.Frame(VPrinsipal, bg='ghost white')
-    FrameHead.place(x= 0, y= 0, relwidth= 1, height= 60)
-    FPL = tk.Label(FrameHead,text='Granja Ucundinamarca',font=('Great Vibes', 25), bg='ghost white')
-    FPL.place(x=20,y=20)
+        ##################################################
+        self.Bacground = tk.Frame(self, bg='light grey')
+        self.Bacground.place(relheight=1,relwidth=1)
+        ##################################################
+        self.FrameHead = tk.Frame(self, bg='light grey')
+        self.FrameHead.place(x= 0, y= 0, relwidth= 1, height= 60)
+        self.FPL = tk.Label(self.FrameHead,text='Granja Ucundinamarca',font=('Great Vibes', 25), bg='light grey')
+        self.FPL.place(x=20,y=20)
 
-    ##################################################
+        ##################################################
 
-    FrameEHead = tk.Frame(VPrinsipal, bg='green4')
-    FrameEHead.place(x= 0, y= 60, relwidth= 1, height= 160)
-    TL = tk.Label(FrameEHead, text='Total',font=('Great Vibes', 50),bg='green4')
-    TL.place(x=570,y=40)
+        self.FrameCul = tk.Frame(self, bg='azure',)
+        self.FrameCul.place(x=150,y=100,width=300,height=550)
+        self.FrameCul.config(highlightbackground="black", highlightthickness=1)
 
-    ##################################################
+        self.icul = Image.open('imagenes/cul.png')
+        self.icul = self.icul.resize((250,250))
+        self.icul = ImageTk.PhotoImage(self.icul)
+        self.CulL1 = tk.Label(self.FrameCul, image=self.icul,bg='azure',command=self.Ganad)
+        self.CulL1.place(x=0,y=50,width=290,height=290)
+        self.CulL2 = tk.Label(self.FrameCul, text='CULTIVOS', bg='azure', anchor='center', font=('Great Vibes', 25))
+        self.CulL2.place(relwidth=1,rely=.7)
+        
+        self.FrameGan = tk.Frame(self, bg='azure')
+        self.FrameGan.place(x=550,y=100,width=300,height=550)
+        self.FrameGan.config(highlightbackground="black", highlightthickness=1)
 
-    FrameCul = tk.Frame(VPrinsipal, bg='green3')
-    FrameCul.place(x=200,y=280,width=300,height=400)
+        self.iGan = Image.open('imagenes/Gan.png')
+        self.iGan = self.iGan.resize((300,300))
+        self.iGan = ImageTk.PhotoImage(self.iGan)
+        self.GanL1 = tk.Label(self.FrameGan, image=self.iGan, bg='azure')
+        self.GanL1.place(x=0,y=50,width=290,height=290)
+        self.GanL2 = tk.Label(self.FrameGan, text='GANADO', bg='azure', anchor='center', font=('Great Vibes', 25))
+        self.GanL2.place(relwidth=1,rely=.7)
 
-    icul = Image.open('imagenes/cul.png')
-    icul = icul.resize((100,140))
-    icul = ImageTk.PhotoImage(icul)
-    CulL1 = tk.Label(FrameCul, image=icul)
-    CulL1.place(relx=.25,y=50,relwidth=.5,height=140)
-    CulL2 = tk.Label(FrameCul, text='CULTIVOS', bg='green3', anchor='center', font=('Great Vibes', 25))
-    CulL2.place(relx=.25,rely=.7)
-    
-    FrameGan = tk.Frame(VPrinsipal, bg='green3')
-    FrameGan.place(x=850,y=280,width=300,height=400)
+        self.FrameTo = tk.Frame(self, bg='azure')
+        self.FrameTo.place(x=950,y=100,width=300,height=550)
+        self.FrameTo.config(highlightbackground="black", highlightthickness=1)
 
-    iGan = Image.open('imagenes/Gan.png')
-    iGan = iGan.resize((100,140))
-    iGan = ImageTk.PhotoImage(iGan)
-    GanL1 = tk.Label(FrameGan, image=iGan)
-    GanL1.place(relx=.25,y=50,relwidth=.5,height=140)
-    GanL2 = tk.Label(FrameGan, text='GANADO', bg='green3', anchor='center', font=('Great Vibes', 25))
-    GanL2.place(relx=.3,rely=.7)
-
-
+        self.iTo = Image.open('imagenes/total.png')
+        self.iTo = self.iTo.resize((400,400))
+        self.iTo = ImageTk.PhotoImage(self.iTo)
+        self.ToL1 = tk.Label(self.FrameTo, image=self.iTo, bg='azure')
+        self.ToL1.place(x=0,y=50,width=290,height=290)
+        self.ToL2 = tk.Label(self.FrameTo, text='Resumen', bg='azure', anchor='center', font=('Great Vibes', 25))
+        self.ToL2.place(relwidth=1,rely=.7)
+        
+        self.mainloop()
 
 
-    VPrinsipal.mainloop()
 
-
+app = Aplicacion()
 DATABASE = 'Granja'
 try:
 
@@ -75,4 +88,4 @@ except:
     messagebox.showerror("Error", f"No se pudo Conectar al servidor: ")
 
 if __name__ == "__main__":
-    main()
+    app.Crear_widgets()
