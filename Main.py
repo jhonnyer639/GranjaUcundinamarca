@@ -39,7 +39,7 @@ def VGanado(event):
     Esp5L = tk.Label(FrameEs,text='Avicultura',bg='grey')
     Esp5L.place(relx=.5,y=20,relwidth=.45,height=100)
 
-    B_Atraz = tk.Button(Background, text='Atraz',bg='green3',command=Atraz)
+    B_Atraz = tk.Button(Background, text='Atraz',bg='green3',command=AtrazG)
     B_Atraz.place(y=680,x=30,width=50,height=25)
 
 
@@ -49,7 +49,7 @@ def VCultivo(event):
 def VTotal(event):
     pass
 
-def Atraz():
+def AtrazG():
     Vprincipal()
     Vganado.destroy()
 
