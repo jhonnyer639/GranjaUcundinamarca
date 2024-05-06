@@ -50,8 +50,8 @@ def VTotal(event):
     pass
 
 def AtrazG():
-    Vprincipal()
     Vganado.destroy()
+    Vprincipal()
 
 def Vprincipal():
     global VPrincipal
@@ -113,7 +113,7 @@ def Vprincipal():
     iTo = ImageTk.PhotoImage(iTo)
     ToL1 = tk.Label(FrameTo, image=iTo, bg='azure')
     ToL1.place(x=0, y=50, width=290, height=290)
-    ToL2 = tk.Label(FrameTo, text='Resumen', bg='azure', anchor='center', font=('Great Vibes', 25))
+    ToL2 = tk.Label(FrameTo, text='REPORTE', bg='azure', anchor='center', font=('Great Vibes', 25))
     ToL2.place(relwidth=1, rely=.7)
 
     FrameTo.bind("<Button-1>", VTotal)
