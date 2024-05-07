@@ -77,8 +77,8 @@ def VGanado():
     EsgL.bind("<Button-1>", VGG)
     Esg.bind("<Button-1>", VGG)
 
-    B_Atraz = tk.Button(fondo, text='Atraz',bg='green3',command=AtrasG)
-    B_Atraz.place(y=680,x=30,width=50,height=25)
+    B_Atras = tk.Button(fondo, text='Atras',bg='green3',command=AtrasG)
+    B_Atras.place(y=680,x=30,width=50,height=25)
 
     VPrincipal.mainloop()
 ##############################
@@ -368,11 +368,197 @@ def VGG(event):
     VPrincipal.mainloop()
 ##############################
 def VCultivo():
+
+    def AnadirCul(): 
+        INombre = InNombre.get()
+        IArea = int(InArea.get())
+        Rendimiento = 0
+        if CoTipo.current() == 0:
+            Rendimiento =  (((IArea*3)*1200000)-(IArea*1400000))
+            CTipo = 'Cereales'
+        if CoTipo.current() == 1:
+            Rendimiento = (((IArea*1.5)*1100000)-(IArea*1300000))
+            CTipo = 'Leguminosas'
+        if CoTipo.current() == 2:
+            Rendimiento = (((IArea * 15)*700000)-(IArea*20000000))
+            CTipo = 'Hortalizas'
+        if CoTipo.current() == 3:
+            Rendimiento = (((IArea*20)*600000)-(IArea*1500000))
+            CTipo = 'Tubérculos'
+        else:
+            print(Rendimiento)
+        if CTipo and InNombre and InArea:
+            try:
+                with cnn.cursor() as cur:
+                    sql = '''INSERT INTO Cultivos (Nombre, Tipo, AreaCultivo, Rendimiento) 
+                            VALUES (?, ?, ?, ?)'''
+                    cur.execute(sql, (INombre, CTipo, IArea, Rendimiento))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Cultivo agregado exitosamente")
+                    #limpiar_campos()
+                    #llenar_datos()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar el Cultivo: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
+        limpiar_campos()
+        MostrarCult()
+    def limpiar_campos():
+            global END
+            InArea.delete(0, tk.END)
+            InNombre.delete(0, tk.END)
+            CoTipo.delete(0, tk.END)
+    def MostrarCult():
+        GridCu.delete(*GridCu.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM Cultivos")
+                datos = cur.fetchall()
+                for row in datos:
+                    GridCu.insert("",'end', values=(row[0], row[1], row[2], row[3]))
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    def modificar():
+        seleccion = GridCu.focus()
+        if seleccion:
+            detalles_empleado = GridCu.item(seleccion)
+
+            def guardar_modificaciones():
+                nuevo_nombre = InNombre.get()
+                IArea = int(InArea.get())
+
+                if CoTipo.current() == 0:
+                    Rendimiento =  (((IArea*3)*1200000)-(IArea*1400000))
+                    CTipo = 'Cereales'
+                if CoTipo.current() == 1:
+                    Rendimiento = (((IArea*1.5)*1100000)-(IArea*1300000))
+                    CTipo = 'Leguminosas'
+                if CoTipo.current() == 2:
+                    Rendimiento = (((IArea * 15)*700000)-(IArea*20000000))
+                    CTipo = 'Hortalizas'
+                if CoTipo.current() == 3:
+                    Rendimiento = (((IArea*20)*600000)-(IArea*1500000))
+                    CTipo = 'Tubérculos'
+                with cnn.cursor() as cur:
+                    sql = "Update Cultivos"
+                    "set Nombre = ? , Tipo=?,AreaCultivo=?,Rendimiento=?"
+                    "where Nombre = ?"
+                    cur.execute(sql,(nuevo_nombre,CTipo,IArea,Rendimiento,))
+                GridCu.item(seleccion, values=(nuevo_nombre, CTipo, IArea ))
+                cnn.commit()
+                ventana_modificar.destroy()
+
+            ventana_modificar = tk.Toplevel()
+            ventana_modificar.title("Alerta")
+
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el Cultivo "+detalles_empleado['values'][0])
+            nuevo_nombre_label.grid(row=0, column=0)
+
+
+            guardar_button = tk.Button(ventana_modificar, text="Modificar", command=guardar_modificaciones)
+            guardar_button.grid(row=8, columnspan=2)
+
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo para modificar")
+    def eliminar():
+        seleccion = GridCu.focus()
+        if seleccion: 
+            NombreCul = GridCu.item(seleccion)['text']
+            try:
+                with cnn.cursor() as cur:
+                    sql = "DELETE FROM Cultivos WHERE Nombre = ?"
+                    cur.execute(sql, (NombreCul,))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Cultivo eliminado exitosamente")
+                    MostrarCult() 
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el cultivo: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")
+        MostrarCult()
+    global FondoCu
     FondoCu = tk.Frame(VPrincipal, bg='light grey')
     FondoCu.place(relheight=1, relwidth=1)
+    #####################################
+    FrameAn = tk.Frame(FondoCu,bg='green3')
+    FrameAn.place(relwidth=1,height=200)
+
+    LTipo = tk.Label(FrameAn,text='Tipo:',bg='green3',font=('Great Vibes', 25))
+    LTipo.place(relx=.1,rely=.3)
+    CoTipo = ttk.Combobox(FrameAn, values=['Cereales','Leguminosas','Hortalizas','Tubérculos'],font=('Great Vibes', 25))
+    CoTipo.place(relx=.1,rely=.5,width=200)
+
+    LNombre = tk.Label(FrameAn, text='Nombre:', bg='green3',font=('Great Vibes', 25))
+    LNombre.place(relx=.3,rely=.3)
+    InNombre = tk.Entry(FrameAn,font=('Great Vibes', 25))
+    InNombre.place(relx=.3,rely=.5,width=200)
+
+    LArea = tk.Label(FrameAn, text='Area de cultivo:(hectarea)', bg='green3',font=('Great Vibes', 25))
+    LArea.place(relx=.5,rely=.3)
+    InArea = tk.Entry(FrameAn,font=('Great Vibes', 25))
+    InArea.place(relx=.5,rely=.5,width=150)
+
+    
+    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirCul)
+    BtnA.place(relx=.87,rely=.15,)
+    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure',command=modificar)
+    BtnM.place(relx=.87,rely=.4,)
+    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure',command=eliminar)
+    BtnE.place(relx=.87,rely=.7)
+    BtnAt = tk.Button(FrameAn,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasCu)
+    BtnAt.place(relx=.01,rely=.1)
+    ##############################
+    FrameTab = tk.Frame(FondoCu,bg='azure')
+    FrameTab.place(relwidth=.75,relheight=1,y=200,relx=.3)
+    GridCu = ttk.Treeview(FrameTab, columns=("Nombre","Tipo","Area de cultivo","Produccion"))
+    GridCu.column("#0", width=1)
+    GridCu.column("Nombre", width=200)
+    GridCu.column("Tipo",width=100)
+    GridCu.column("Area de cultivo",width=70)
+    GridCu.heading("Nombre", text='Nombre')
+    GridCu.heading("Tipo", text='Tipo')
+    GridCu.heading("Area de cultivo", text="Area de cultivo\n(hectarea)")
+    GridCu.heading("Produccion", text='Produccion\n(Cosecha)')
+    GridCu.place(x=0,y=0,relheight=1,relwidth=1)
+    ############################################
+    ICultivo = Image.open('imagenes/Banner_cultivo.png')
+    ICultivo = ICultivo.resize((500,800))
+    ICultivo = ImageTk.PhotoImage(ICultivo)
+    FrameIm = tk.Frame(FondoCu)
+    FrameIm.place(relwidth=.3,relheight=1,y=200)
+    LIm = tk.Label(FrameIm, image=ICultivo)
+    LIm.pack()
+    MostrarCult()
+
+
+
+    VPrincipal.mainloop()
 ##############################
-def VTotal(event):
-    pass
+def VTotal():
+    global FondoRe
+    FondoRe = tk.Frame(VPrincipal, bg='green4')
+    FondoRe.place(relheight=1, relwidth=1)
+
+    ICultivo = Image.open('imagenes/banner_re.png')
+    ICultivo = ICultivo.resize((1020,800))
+    ICultivo = ImageTk.PhotoImage(ICultivo)
+    
+    LIF = tk.Label(FondoRe,bg='green4')
+    LIF.place(relheight=1,relwidth=1)
+    #####################################
+    BtnAt = tk.Button(FondoRe,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasRe)
+    BtnAt.place(relx=.01,rely=.01)
+    ######################
+
+    Total = '1´200.000'
+    LT = tk.Label(FondoRe,text='Produccion Total de la granja',font=('Great Vibes', 50),bg='green4',anchor='center')
+    LT.place(relwidth=1,rely=.1)
+    LTP = tk.Label(FondoRe,text="$"+Total,font=('Great Vibes', 100),bg='green4',anchor='center')
+    LTP.place(relwidth=1,rely=.3)
+    VPrincipal.mainloop()
+
+
+    
 ##############################
 def Salir(event):
     pass
@@ -392,6 +578,12 @@ def AtrasGa():
 ##############################
 def AtrasG():
     fondo.destroy()
+    Vprincipal()
+def AtrasCu():
+    FondoCu.destroy()
+    Vprincipal()
+def AtrasRe():
+    FondoRe.destroy()
     Vprincipal()
 ##############################
 def Vprincipal():
@@ -454,9 +646,9 @@ def Vprincipal():
     ToL2 = tk.Label(FrameTo, text='REPORTE', bg='azure', anchor='center', font=('Great Vibes', 25))
     ToL2.place(relwidth=1, rely=.7)
 
-    FrameTo.bind("<Button-1>", VTotal)
-    ToL2.bind("<Button-1>", VTotal)
-    ToL1.bind("<Button-1>", VTotal)
+    FrameTo.bind("<Button-1>", VTo)
+    ToL2.bind("<Button-1>", VTo)
+    ToL1.bind("<Button-1>", VTo)
     VPrincipal.mainloop()
 ##############################
 def Vgan(event):
@@ -465,6 +657,9 @@ def Vgan(event):
 def VCul(event):
     Background.destroy()
     VCultivo()
+def VTo(event):
+    Background.destroy()
+    VTotal()
 DATABASE = 'Granja'
 try:
     cnn = pyodbc.connect(
