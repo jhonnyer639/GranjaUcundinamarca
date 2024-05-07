@@ -421,7 +421,8 @@ def VCultivo():
     def modificar():
         seleccion = GridCu.focus()
         if seleccion:
-            detalles_empleado = GridCu.item(seleccion)
+            detalles_Cultivo = GridCu.item(seleccion)
+            texto = detalles_Cultivo['text']
 
             def guardar_modificaciones():
                 nuevo_nombre = InNombre.get()
@@ -463,11 +464,14 @@ def VCultivo():
     def eliminar():
         seleccion = GridCu.focus()
         if seleccion: 
-            NombreCul = GridCu.item(seleccion)['text']
+            
+            detalles_Cultivo = GridCu.item(seleccion)
+            texto = detalles_Cultivo['text']
+            print(texto)
             try:
                 with cnn.cursor() as cur:
                     sql = "DELETE FROM Cultivos WHERE Nombre = ?"
-                    cur.execute(sql, (NombreCul,))
+                    cur.execute(sql, (texto,))
                     cnn.commit()
                     messagebox.showinfo("Éxito", "Cultivo eliminado exitosamente")
                     MostrarCult() 
