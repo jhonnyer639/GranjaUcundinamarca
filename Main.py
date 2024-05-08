@@ -83,6 +83,151 @@ def VGanado():
     VPrincipal.mainloop()
 ##############################
 def VGV(event):
+    def limpiar_campos():
+            global END
+            InEdad.delete(0, tk.END)
+            CoRaza.delete(0, tk.END)
+            InPeso.delete(0, tk.END)
+            InNum.delete(0, tk.END)
+    
+    def AnadirV(): 
+        IEdad = int(InEdad.get())
+        IPeso = int(InPeso.get())
+        IOreja = InNum.get()
+        if IEdad>18:
+            Rendimiento = (IPeso/IEdad)*20000
+        else:
+            Rendimiento=0
+
+        if CoRaza.current() == 0:
+            CRaza = 'Holstein'
+        if CoRaza.current() == 1:
+            CRaza = 'Gyr'
+        if CoRaza.current() == 2:
+            CRaza = 'Jersey'
+        if CoRaza.current() == 3:
+            CRaza = 'Normando'
+        if CoRaza.current() == 4:
+            CRaza = 'Pardo suizo'
+        else:
+            print(Rendimiento)
+        if CRaza and IEdad and IPeso and IOreja:
+            try:
+                with cnn.cursor() as cur:
+                    sql = '''INSERT INTO GanadoV (Edad, Raza, Peso, NOreja, Produccion,Especie) 
+                            VALUES (?, ?, ?, ?, ?,?)'''
+                    cur.execute(sql, (IEdad, CRaza, IPeso, IOreja, Rendimiento, 'Vaca'))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Cultivo agregado exitosamente")
+                    limpiar_campos()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar el Cultivo: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
+    
+    def MostrarV0(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Holstein':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay ganado de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    def MostrarV1(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Gyr':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                        messagebox.showerror("advertercia",f"no hay ganado de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    def MostrarV2(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Jersey':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                        messagebox.showerror("advertercia",f"no hay ganado de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    def MostrarV3(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Normando':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                        messagebox.showerror("advertercia",f"no hay ganado de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    def MostrarV4(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c = 0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Pardo suizo':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                        messagebox.showerror("advertercia",f"no hay ganado de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
+    
+    
+    
     global FondoV
     fondo.destroy()
     ###############
@@ -112,7 +257,7 @@ def VGV(event):
     InNum = tk.Entry(FrameAn,font=('Great Vibes', 25))
     InNum.place(relx=.7,rely=.5,width=200)
     
-    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure')
+    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirV)
     BtnA.place(relx=.87,rely=.15,)
     BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
     BtnM.place(relx=.87,rely=.4,)
@@ -126,18 +271,23 @@ def VGV(event):
 
     F1 = tk.Button(FrameRaza,text='Holstein',bg='azure',font=('Great Vibes', 15))
     F1.place(rely=.03,x=50,relwidth=.8,height=80)
+    F1.bind("<Button-1>", MostrarV0)
 
     F2 = tk.Button(FrameRaza,text='Gyr',font=('Great Vibes', 15),bg='azure')
     F2.place(rely=.23,x=50,relwidth=.8,height=80)
+    F2.bind("<Button-1>", MostrarV1)
 
     F3 = tk.Button(FrameRaza,text='Jersey',font=('Great Vibes', 15),bg='azure')
     F3.place(rely=.43,x=50,relwidth=.8,height=80)
+    F3.bind("<Button-1>", MostrarV2)
 
     F4 = tk.Button(FrameRaza,text='Normando',font=('Great Vibes', 15),bg='azure')
     F4.place(rely=.63,x=50,relwidth=.8,height=80)
+    F4.bind("<Button-1>", MostrarV3)
 
     F5 = tk.Button(FrameRaza,text='Pardo suizo',font=('Great Vibes', 15),bg='azure')
     F5.place(rely=.83,x=50,relwidth=.8,height=80)
+    F5.bind("<Button-1>", MostrarV4)
     #####################
     FrameG = tk.Frame(FondoV,bg='azure')
     FrameG.place(relwidth=.5,relheight=1,y=200,relx=.5)
@@ -157,6 +307,134 @@ def VGV(event):
     VPrincipal.mainloop()
 ##############################
 def VGC(event):
+
+    def limpiar_campos():
+            global END
+            InEdad.delete(0, tk.END)
+            CoRaza.delete(0, tk.END)
+            InPeso.delete(0, tk.END)
+            InNum.delete(0, tk.END)
+    def AnadirCe(): 
+        IEdad = int(InEdad.get())
+        IPeso = int(InPeso.get())
+        IOreja = InNum.get()
+        if IEdad>18:
+            Rendimiento = (IPeso/IEdad)*20000
+        else:
+            Rendimiento=0
+
+        if CoRaza.current() == 0:
+            CRaza = 'San Pedreño'
+        if CoRaza.current() == 1:
+            CRaza = 'Zungo'
+        if CoRaza.current() == 2:
+            CRaza = 'Casco de Mula'
+        else:
+            pass
+        if CRaza and IEdad and IPeso and IOreja:
+            try:
+                with cnn.cursor() as cur:
+                    sql = '''INSERT INTO GanadoV (Edad, Raza, Peso, NOreja, Produccion,Especie) 
+                            VALUES (?, ?, ?, ?, ?,?)'''
+                    cur.execute(sql, (IEdad, CRaza, IPeso, IOreja, Rendimiento, 'Cerdo'))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Cerdo fue agregado exitosamente")
+                    limpiar_campos()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar el cerdo: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
+        Botones()
+        limpiar_campos()
+
+    def MostrarV0(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cerdo':
+                            if row[0]=='San Pedreño':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cerdos de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV1(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cerdo':
+                            if row[0]=='Zungo':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cerdos de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV2(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cerdo':
+                            if row[0]=='Casco de Mula':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cerdos de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+
+    def Botones():
+        with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                s=0
+                z=0
+                c=0
+                for row in datos:
+                    if row[5] == 'Cerdo':
+                            if row[0]=='San Pedreño':
+                                s=s+1
+                            if row[0]=='Zungo': 
+                                z=z+1
+                            if row[0]=='Casco de Mula':
+                                c=c+1
+                if s>0:
+                    F1 = tk.Button(FrameRaza,text='San Pedreño',bg='azure',font=('Great Vibes', 15))
+                    F1.place(rely=.1,x=50,relwidth=.8,height=80)
+                    F1.bind("<Button-1>", MostrarV0)
+                if z>0: 
+                    F2 = tk.Button(FrameRaza,text='Zungo',font=('Great Vibes', 15),bg='azure')
+                    F2.place(rely=.4,x=50,relwidth=.8,height=80)
+                    F2.bind("<Button-1>", MostrarV1)
+                if c>0:
+                    F3 = tk.Button(FrameRaza,text='Casco de Mula',font=('Great Vibes', 15),bg='azure')
+                    F3.place(rely=.7,x=50,relwidth=.8,height=80)
+                    F3.bind("<Button-1>", MostrarV2)
     global FondoC
     fondo.destroy()
     ###############
@@ -186,7 +464,7 @@ def VGC(event):
     InNum = tk.Entry(FrameAn,font=('Great Vibes', 25))
     InNum.place(relx=.7,rely=.5,width=200)
     
-    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure')
+    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirCe)
     BtnA.place(relx=.87,rely=.15,)
     BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
     BtnM.place(relx=.87,rely=.4,)
@@ -197,15 +475,8 @@ def VGC(event):
     ###################################
     FrameRaza = tk.Frame(FondoC,bg='light gray')
     FrameRaza.place(relwidth=.5,height=545,y=200)
-
-    F1 = tk.Button(FrameRaza,text='San Pedreño',bg='azure',font=('Great Vibes', 15))
-    F1.place(rely=.1,x=50,relwidth=.8,height=80)
-
-    F2 = tk.Button(FrameRaza,text='Zungo',font=('Great Vibes', 15),bg='azure')
-    F2.place(rely=.4,x=50,relwidth=.8,height=80)
-
-    F3 = tk.Button(FrameRaza,text='Casco de Mula',font=('Great Vibes', 15),bg='azure')
-    F3.place(rely=.7,x=50,relwidth=.8,height=80)
+    Botones()
+    
     #####################
     FrameG = tk.Frame(FondoC,bg='azure')
     FrameG.place(relwidth=.5,relheight=1,y=200,relx=.5)
@@ -225,6 +496,163 @@ def VGC(event):
     VPrincipal.mainloop()
 ##############################
 def VGCa(event):
+
+    def limpiar_campos():
+            global END
+            InEdad.delete(0, tk.END)
+            CoRaza.delete(0, tk.END)
+            InPeso.delete(0, tk.END)
+            InNum.delete(0, tk.END)
+    def AnadirCa(): 
+        IEdad = int(InEdad.get())
+        IPeso = int(InPeso.get())
+        IOreja = InNum.get()
+        if IEdad>18:
+            Rendimiento = (IPeso/IEdad)*20000
+        else:
+            Rendimiento=0
+
+        if CoRaza.current() == 0:
+            CRaza = 'Saanen'
+        if CoRaza.current() == 1:
+            CRaza = 'Toggenburg'
+        if CoRaza.current() == 2:
+            CRaza = 'Alpina'
+        if CoRaza.current() == 3:
+            CRaza = 'La Mancha'
+        else:
+            pass
+        if CRaza and IEdad and IPeso and IOreja:
+            try:
+                with cnn.cursor() as cur:
+                    sql = '''INSERT INTO GanadoV (Edad, Raza, Peso, NOreja, Produccion,Especie) 
+                            VALUES (?, ?, ?, ?, ?,?)'''
+                    cur.execute(sql, (IEdad, CRaza, IPeso, IOreja, Rendimiento, 'Cabra'))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Cabra fue agregada exitosamente")
+                    limpiar_campos()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar la cabra: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
+        Botones()
+        limpiar_campos()
+
+    def Botones():
+        with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                s=0
+                z=0
+                c=0
+                d=0
+                for row in datos:
+                    if row[5] == 'Cabra':
+                            if row[0]=='Saanen':
+                                s=s+1
+                            if row[0]=='Toggenburg': 
+                                z=z+1
+                            if row[0]=='Alpina':
+                                c=c+1
+                            if row[0]=='La Mancha':
+                                d=d+1
+                if s>0:
+                    F1 = tk.Button(FrameRaza,text='Saanen',bg='azure',font=('Great Vibes', 15))
+                    F1.place(rely=.1,x=50,relwidth=.8,height=80)
+                    F1.bind("<Button-1>", MostrarV0)
+                if z>0: 
+                    F2 = tk.Button(FrameRaza,text='Toggenburg',font=('Great Vibes', 15),bg='azure')
+                    F2.place(rely=.3,x=50,relwidth=.8,height=80)
+                    F2.bind("<Button-1>", MostrarV1)
+                if c>0:
+                    F3 = tk.Button(FrameRaza,text='Alpina',font=('Great Vibes', 15),bg='azure')
+                    F3.place(rely=.5,x=50,relwidth=.8,height=80)
+                    F3.bind("<Button-1>", MostrarV2)
+                if d>0:
+                    F4 = tk.Button(FrameRaza,text='La Mancha',font=('Great Vibes', 15),bg='azure')
+                    F4.place(rely=.7,x=50,relwidth=.8,height=80)
+                    F4.bind("<Button-1>", MostrarV3)
+    def MostrarV0(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cabra':
+                            if row[0]=='Saanen':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV1(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cabra':
+                            if row[0]=='Toggenburg':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV2(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cabra':
+                            if row[0]=='Alpina':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV3(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Cabra':
+                            if row[0]=='La Mancha':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    
     global FondoCa
     fondo.destroy()
     FondoCa = tk.Frame(VPrincipal)
@@ -253,7 +681,7 @@ def VGCa(event):
     InNum = tk.Entry(FrameAn,font=('Great Vibes', 25))
     InNum.place(relx=.7,rely=.5,width=200)
     
-    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure')
+    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure', command=AnadirCa)
     BtnA.place(relx=.87,rely=.15,)
     BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
     BtnM.place(relx=.87,rely=.4,)
@@ -265,17 +693,7 @@ def VGCa(event):
     FrameRaza = tk.Frame(FondoCa,bg='light gray')
     FrameRaza.place(relwidth=.5,height=545,y=200)
 
-    F1 = tk.Button(FrameRaza,text='Saanen',bg='azure',font=('Great Vibes', 15))
-    F1.place(rely=.1,x=50,relwidth=.8,height=80)
-
-    F2 = tk.Button(FrameRaza,text='Toggenburg',font=('Great Vibes', 15),bg='azure')
-    F2.place(rely=.3,x=50,relwidth=.8,height=80)
-
-    F3 = tk.Button(FrameRaza,text='Alpina',font=('Great Vibes', 15),bg='azure')
-    F3.place(rely=.5,x=50,relwidth=.8,height=80)
-
-    F4 = tk.Button(FrameRaza,text='La Mancha',font=('Great Vibes', 15),bg='azure')
-    F4.place(rely=.7,x=50,relwidth=.8,height=80)
+    
     #####################
     FrameG = tk.Frame(FondoCa,bg='azure')
     FrameG.place(relwidth=.5,relheight=1,y=200,relx=.5)
@@ -291,10 +709,199 @@ def VGCa(event):
     GridV.heading("Numero oreja", text='Numero oreja')
     GridV.heading("Produccion", text='Produccion\n(Diaria)')
     GridV.place(x=0,y=0,relheight=1,width=680)
+    Botones()
     #####################
     VPrincipal.mainloop()
 ##############################
 def VGG(event):
+
+    def limpiar_campos():
+            global END
+            InEdad.delete(0, tk.END)
+            CoRaza.delete(0, tk.END)
+            InPeso.delete(0, tk.END)
+            InNum.delete(0, tk.END)
+    def AnadirGa(): 
+        IEdad = int(InEdad.get())
+        IPeso = int(InPeso.get())
+        IOreja = InNum.get()
+        if IEdad>18:
+            Rendimiento = (IPeso/IEdad)*20000
+        else:
+            Rendimiento=0
+
+        if CoRaza.current() == 0:
+            CRaza = 'Leghorn Blanca'
+        if CoRaza.current() == 1:
+            CRaza = 'Rhode Island Roja'
+        if CoRaza.current() == 2:
+            CRaza = 'New Hampshire'
+        if CoRaza.current() == 3:
+            CRaza = 'Cornish'
+        if CoRaza.current() == 4:
+            CRaza = 'Sussex Clara'
+        else:
+            pass
+        if CRaza and IEdad and IPeso and IOreja:
+            try:
+                with cnn.cursor() as cur:
+                    sql = '''INSERT INTO GanadoV (Edad, Raza, Peso, NOreja, Produccion,Especie) 
+                            VALUES (?, ?, ?, ?, ?,?)'''
+                    cur.execute(sql, (IEdad, CRaza, IPeso, IOreja, Rendimiento, 'Gallina'))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "Galina fue agregada exitosamente")
+                    limpiar_campos()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo agregar la Gallina: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
+        Botones()
+        limpiar_campos()
+
+    def Botones():
+        with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                s=0
+                z=0
+                c=0
+                d=0
+                a=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='Leghorn Blanca':
+                                s=s+1
+                            if row[0]=='Rhode Island Roja': 
+                                z=z+1
+                            if row[0]=='New Hampshire':
+                                c=c+1
+                            if row[0]=='Cornish':
+                                d=d+1
+                            if row[0]=='Sussex Clara':
+                                a=a+1
+                if s>0:
+                    F1 = tk.Button(FrameRaza,text='Leghorn Blanca',bg='azure',font=('Great Vibes', 15))
+                    F1.place(rely=.03,x=50,relwidth=.8,height=80)
+                    F1.bind("<Button-1>", MostrarV0)
+                if z>0: 
+                    F2 = tk.Button(FrameRaza,text='Rhode Island Roja',font=('Great Vibes', 15),bg='azure')
+                    F2.place(rely=.23,x=50,relwidth=.8,height=80)
+                    F2.bind("<Button-1>", MostrarV1)
+                if c>0:
+                    F3 = tk.Button(FrameRaza,text='New Hampshire',font=('Great Vibes', 15),bg='azure')
+                    F3.place(rely=.43,x=50,relwidth=.8,height=80)
+                    F3.bind("<Button-1>", MostrarV2)
+                if d>0:
+                    F4 = tk.Button(FrameRaza,text='Cornish',font=('Great Vibes', 15),bg='azure')
+                    F4.place(rely=.63,x=50,relwidth=.8,height=80)
+                    F4.bind("<Button-1>", MostrarV3)
+                if a>0:
+                    F5 = tk.Button(FrameRaza,text='Sussex Clara',font=('Great Vibes', 15),bg='azure')
+                    F5.place(rely=.83,x=50,relwidth=.8,height=80)
+                    F5.bind("<Button-1>", MostrarV4)
+    def MostrarV0(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='Leghorn Blanca':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV1(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='Rhode Island Roja':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV2(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='New Hampshire':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV3(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='Cornish':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de los cerdos: {str(e)}")
+    def MostrarV4(event):
+        GridV.delete(*GridV.get_children())
+        try:
+            with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                c=0
+                for row in datos:
+                    if row[5] == 'Gallina':
+                            if row[0]=='Sussex Clara':
+                                GridV.insert("",'end', values=(row[0], row[1], row[2], row[3], row[4]))
+                                c=+1
+                            else:
+                                pass
+                if c==0:
+                    messagebox.showerror("advertercia",f"no hay cabras de esta raza")
+                else:
+                    pass
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo obtener los datos de las gallinas: {str(e)}")
+    
+
+
     global FondoGa
     fondo.destroy()
     FondoGa = tk.Frame(VPrincipal)
@@ -323,7 +930,7 @@ def VGG(event):
     InNum = tk.Entry(FrameAn,font=('Great Vibes', 25))
     InNum.place(relx=.7,rely=.5,width=200)
     
-    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure')
+    BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirGa)
     BtnA.place(relx=.87,rely=.15,)
     BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
     BtnM.place(relx=.87,rely=.4,)
@@ -335,20 +942,8 @@ def VGG(event):
     FrameRaza = tk.Frame(FondoGa,bg='light gray')
     FrameRaza.place(relwidth=.5,height=545,y=200)
 
-    F1 = tk.Button(FrameRaza,text='Leghorn Blanca',bg='azure',font=('Great Vibes', 15))
-    F1.place(rely=.03,x=50,relwidth=.8,height=80)
-
-    F2 = tk.Button(FrameRaza,text='Rhode Island Roja',font=('Great Vibes', 15),bg='azure')
-    F2.place(rely=.23,x=50,relwidth=.8,height=80)
-
-    F3 = tk.Button(FrameRaza,text='New Hampshire',font=('Great Vibes', 15),bg='azure')
-    F3.place(rely=.43,x=50,relwidth=.8,height=80)
-
-    F4 = tk.Button(FrameRaza,text='Cornish',font=('Great Vibes', 15),bg='azure')
-    F4.place(rely=.63,x=50,relwidth=.8,height=80)
-
-    F5 = tk.Button(FrameRaza,text='Sussex Clara',font=('Great Vibes', 15),bg='azure')
-    F5.place(rely=.83,x=50,relwidth=.8,height=80)
+    Botones()
+    
     #####################
     FrameG = tk.Frame(FondoGa,bg='azure')
     FrameG.place(relwidth=.5,relheight=1,y=200,relx=.5)
@@ -452,7 +1047,7 @@ def VCultivo():
             ventana_modificar = tk.Toplevel()
             ventana_modificar.title("Alerta")
 
-            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el Cultivo "+detalles_empleado['values'][0])
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el Cultivo "+detalles_Cultivo['values'][0])
             nuevo_nombre_label.grid(row=0, column=0)
 
 
@@ -464,7 +1059,6 @@ def VCultivo():
     def eliminar():
         seleccion = GridCu.focus()
         if seleccion: 
-            
             detalles_Cultivo = GridCu.item(seleccion)
             texto = detalles_Cultivo['text']
             print(texto)
