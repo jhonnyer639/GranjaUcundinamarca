@@ -90,6 +90,48 @@ def VGV(event):
             InPeso.delete(0, tk.END)
             InNum.delete(0, tk.END)
     
+    def Botones():
+        with cnn.cursor() as cur:
+                cur.execute("SELECT * FROM GanadoV")
+                datos = cur.fetchall()
+                s=0
+                z=0
+                c=0
+                d=0
+                a=0
+                for row in datos:
+                    if row[5] == 'Vaca':
+                            if row[0]=='Holstein':
+                                s=s+1
+                            if row[0]=='Gyr': 
+                                z=z+1
+                            if row[0]=='Jersey':
+                                c=c+1
+                            if row[0]=='Normando':
+                                d=d+1
+                            if row[0]=='Pardo suizo':
+                                a=a+1
+                if s>0:
+                    F1 = tk.Button(FrameRaza,text='Holstein',bg='azure',font=('Great Vibes', 15))
+                    F1.place(rely=.03,x=50,relwidth=.8,height=80)
+                    F1.bind("<Button-1>", MostrarV0)
+                if z>0: 
+                    F2 = tk.Button(FrameRaza,text='Gyr',font=('Great Vibes', 15),bg='azure')
+                    F2.place(rely=.23,x=50,relwidth=.8,height=80)
+                    F2.bind("<Button-1>", MostrarV1)
+                if c>0:
+                    F3 = tk.Button(FrameRaza,text='Jersey',font=('Great Vibes', 15),bg='azure')
+                    F3.place(rely=.43,x=50,relwidth=.8,height=80)
+                    F3.bind("<Button-1>", MostrarV2)
+                if d>0:
+                    F4 = tk.Button(FrameRaza,text='Normando',font=('Great Vibes', 15),bg='azure')
+                    F4.place(rely=.63,x=50,relwidth=.8,height=80)
+                    F4.bind("<Button-1>", MostrarV3)
+                if a>0:
+                    F5 = tk.Button(FrameRaza,text='Pardo suizo',font=('Great Vibes', 15),bg='azure')
+                    F5.place(rely=.83,x=50,relwidth=.8,height=80)
+                    F5.bind("<Button-1>", MostrarV4)
+    
     def AnadirV(): 
         IEdad = int(InEdad.get())
         IPeso = int(InPeso.get())
@@ -124,7 +166,7 @@ def VGV(event):
                 messagebox.showerror("Error", f"No se pudo agregar el Cultivo: {str(e)}")
         else:
             messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
-    
+        Botones()
     def MostrarV0(event):
         GridV.delete(*GridV.get_children())
         try:
@@ -226,8 +268,6 @@ def VGV(event):
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo obtener los datos de los Cultivos: {str(e)}")
     
-    
-    
     global FondoV
     fondo.destroy()
     ###############
@@ -268,26 +308,6 @@ def VGV(event):
     ###################################
     FrameRaza = tk.Frame(FondoV,bg='light gray')
     FrameRaza.place(relwidth=.5,height=545,y=200)
-
-    F1 = tk.Button(FrameRaza,text='Holstein',bg='azure',font=('Great Vibes', 15))
-    F1.place(rely=.03,x=50,relwidth=.8,height=80)
-    F1.bind("<Button-1>", MostrarV0)
-
-    F2 = tk.Button(FrameRaza,text='Gyr',font=('Great Vibes', 15),bg='azure')
-    F2.place(rely=.23,x=50,relwidth=.8,height=80)
-    F2.bind("<Button-1>", MostrarV1)
-
-    F3 = tk.Button(FrameRaza,text='Jersey',font=('Great Vibes', 15),bg='azure')
-    F3.place(rely=.43,x=50,relwidth=.8,height=80)
-    F3.bind("<Button-1>", MostrarV2)
-
-    F4 = tk.Button(FrameRaza,text='Normando',font=('Great Vibes', 15),bg='azure')
-    F4.place(rely=.63,x=50,relwidth=.8,height=80)
-    F4.bind("<Button-1>", MostrarV3)
-
-    F5 = tk.Button(FrameRaza,text='Pardo suizo',font=('Great Vibes', 15),bg='azure')
-    F5.place(rely=.83,x=50,relwidth=.8,height=80)
-    F5.bind("<Button-1>", MostrarV4)
     #####################
     FrameG = tk.Frame(FondoV,bg='azure')
     FrameG.place(relwidth=.5,relheight=1,y=200,relx=.5)
@@ -303,6 +323,7 @@ def VGV(event):
     GridV.heading("Numero oreja", text='Numero oreja')
     GridV.heading("Produccion", text='Produccion\n(Diaria)')
     GridV.place(x=0,y=0,relheight=1,width=680)
+    Botones()
     #####################
     VPrincipal.mainloop()
 ##############################
@@ -899,8 +920,6 @@ def VGG(event):
                     pass
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo obtener los datos de las gallinas: {str(e)}")
-    
-
 
     global FondoGa
     fondo.destroy()
@@ -1017,7 +1036,8 @@ def VCultivo():
         seleccion = GridCu.focus()
         if seleccion:
             detalles_Cultivo = GridCu.item(seleccion)
-            texto = detalles_Cultivo['text']
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(0)
 
             def guardar_modificaciones():
                 nuevo_nombre = InNombre.get()
@@ -1036,10 +1056,10 @@ def VCultivo():
                     Rendimiento = (((IArea*20)*600000)-(IArea*1500000))
                     CTipo = 'Tubérculos'
                 with cnn.cursor() as cur:
-                    sql = "Update Cultivos"
-                    "set Nombre = ? , Tipo=?,AreaCultivo=?,Rendimiento=?"
-                    "where Nombre = ?"
-                    cur.execute(sql,(nuevo_nombre,CTipo,IArea,Rendimiento,))
+                    sql = """Update Cultivos
+                    set Nombre = ? , Tipo=?,AreaCultivo=?,Rendimiento=?
+                    where Nombre = ?"""
+                    cur.execute(sql,(nuevo_nombre,CTipo,IArea,Rendimiento,nombre))
                 GridCu.item(seleccion, values=(nuevo_nombre, CTipo, IArea ))
                 cnn.commit()
                 ventana_modificar.destroy()
@@ -1060,12 +1080,12 @@ def VCultivo():
         seleccion = GridCu.focus()
         if seleccion: 
             detalles_Cultivo = GridCu.item(seleccion)
-            texto = detalles_Cultivo['text']
-            print(texto)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(0)
             try:
                 with cnn.cursor() as cur:
                     sql = "DELETE FROM Cultivos WHERE Nombre = ?"
-                    cur.execute(sql, (texto,))
+                    cur.execute(sql, (nombre))
                     cnn.commit()
                     messagebox.showinfo("Éxito", "Cultivo eliminado exitosamente")
                     MostrarCult() 
@@ -1074,6 +1094,7 @@ def VCultivo():
         else:
             messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")
         MostrarCult()
+    
     global FondoCu
     FondoCu = tk.Frame(VPrincipal, bg='light grey')
     FondoCu.place(relheight=1, relwidth=1)
@@ -1081,8 +1102,8 @@ def VCultivo():
     FrameAn = tk.Frame(FondoCu,bg='green3')
     FrameAn.place(relwidth=1,height=200)
 
-    LTipo = tk.Label(FrameAn,text='Tipo:',bg='green3',font=('Great Vibes', 25))
-    LTipo.place(relx=.1,rely=.3)
+    LTipo = tk.Label(FrameAn,text='Tipo:',bg='green3',font=('Comic Sans MS', 25))
+    LTipo.place(relx=.1,rely=.2)
     CoTipo = ttk.Combobox(FrameAn, values=['Cereales','Leguminosas','Hortalizas','Tubérculos'],font=('Great Vibes', 25))
     CoTipo.place(relx=.1,rely=.5,width=200)
 
@@ -1140,7 +1161,18 @@ def VTotal():
     ICultivo = Image.open('imagenes/banner_re.png')
     ICultivo = ICultivo.resize((1020,800))
     ICultivo = ImageTk.PhotoImage(ICultivo)
-    
+
+    ProTot=0
+    with cnn.cursor() as cur:
+        cur.execute("SELECT * FROM GanadoV")
+        datos = cur.fetchall()
+        for row in datos:
+            ProTot= ProTot+row[4]
+    with cnn.cursor() as cur:
+        cur.execute("SELECT * FROM Cultivos")
+        datos = cur.fetchall()
+        for row in datos:
+            ProTot= ProTot+row[3]
     LIF = tk.Label(FondoRe,bg='green4')
     LIF.place(relheight=1,relwidth=1)
     #####################################
@@ -1148,10 +1180,10 @@ def VTotal():
     BtnAt.place(relx=.01,rely=.01)
     ######################
 
-    Total = '1´200.000'
+    total = '$'+str(ProTot)
     LT = tk.Label(FondoRe,text='Produccion Total de la granja',font=('Great Vibes', 50),bg='green4',anchor='center')
     LT.place(relwidth=1,rely=.1)
-    LTP = tk.Label(FondoRe,text="$"+Total,font=('Great Vibes', 100),bg='green4',anchor='center')
+    LTP = tk.Label(FondoRe,text=total ,font=('Great Vibes', 100),bg='green4',anchor='center')
     LTP.place(relwidth=1,rely=.3)
     VPrincipal.mainloop()
 
