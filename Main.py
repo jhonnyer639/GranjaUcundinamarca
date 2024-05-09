@@ -984,7 +984,7 @@ def VGG(event):
                 IPeso = int(InPeso.get())
                 INum = InNum.get()
                 if IEdad>18:
-                    Rendimiento = (IEdad*24)*500
+                    Rendimiento = (24)*500
                 else:
                     Rendimiento=0
                 if CoRaza.current() == 0:
