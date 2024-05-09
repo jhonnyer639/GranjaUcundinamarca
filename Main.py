@@ -137,38 +137,41 @@ def VGV(event):
         if seleccion:
             detalles_Cultivo = GridV.item(seleccion)
             nombre = detalles_Cultivo['values']
-            nombre = nombre.pop(0)
+            nombre = nombre.pop(3)
 
             def guardar_modificaciones():
-                IEdad = InEdad.get()
+                IEdad = int(InEdad.get())
                 IPeso = int(InPeso.get())
                 INum = InNum.get()
-                Ioreja = INum()
                 if IEdad>18:
-                    Rendimiento = (IPeso/IEdad)*20000
+                    Rendimiento = (IPeso/IEdad)*2000
                 else:
                     Rendimiento=0
                 if CoRaza.current() == 0:
-                    CRaza = 'Cereales'
+                    CRaza = 'Holstein'
                 if CoRaza.current() == 1:
-                    CRaza = 'Leguminosas'
+                    CRaza = 'Gyr'
                 if CoRaza.current() == 2:
-                    CRaza = 'Hortalizas'
+                    CRaza = 'Jersey'
                 if CoRaza.current() == 3:
-                    CRaza = 'Tubérculos'
+                    CRaza = 'Normando'
+                if CoRaza.current() == 4:
+                    CRaza = 'Pardo suizo'
                 with cnn.cursor() as cur:
                     sql = """Update GanadoV
-                    set Raza =? ,Edad=?, ,Peso=?, NOreja=?, Produccion=?,Especie=?
-                    where Nombre = ?"""
-                    cur.execute(sql,(CoRaza,IEdad,IPeso,INum,Rendimiento,'Vaca'))
-                GridV.item(seleccion, values=(CoRaza, IEdad, IPeso,INum ))
+	                        set Raza =?, Edad=?, Peso=?,NOreja=?,Produccion=?,Especie=?
+	                        where NOreja =?"""
+                    cur.execute(sql,(CRaza,IEdad,IPeso,INum,Rendimiento,'Vaca',nombre))
+                    Botones()
+                    limpiar_campos()
+                GridV.item(seleccion, values=(CRaza, IEdad, IPeso,INum ))
                 cnn.commit()
                 ventana_modificar.destroy()
 
             ventana_modificar = tk.Toplevel()
             ventana_modificar.title("Alerta")
 
-            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el Cultivo "+detalles_Cultivo['values'][0])
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el animal ")
             nuevo_nombre_label.grid(row=0, column=0)
 
 
@@ -182,24 +185,24 @@ def VGV(event):
         if seleccion: 
             detalles_Cultivo = GridV.item(seleccion)
             nombre = detalles_Cultivo['values']
-            nombre = nombre.pop(0)
+            nombre = nombre.pop(3)
             try:
                 with cnn.cursor() as cur:
-                    sql = "DELETE FROM Cultivos WHERE Nombre = ?"
+                    sql = "DELETE FROM GanadoV WHERE NOreja = ?"
                     cur.execute(sql, (nombre))
                     cnn.commit()
-                    messagebox.showinfo("Éxito", "Cultivo eliminado exitosamente")
+                    messagebox.showinfo("Éxito", "animal eliminado exitosamente")
             except Exception as e:
-                messagebox.showerror("Error", f"No se pudo eliminar el cultivo: {str(e)}")
+                messagebox.showerror("Error", f"No se pudo eliminar el animal: {str(e)}")
         else:
-            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")
-    
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")    
+            Botones()
     def AnadirV(): 
         IEdad = int(InEdad.get())
         IPeso = int(InPeso.get())
         IOreja = InNum.get()
         if IEdad>18:
-            Rendimiento = (IPeso/IEdad)*20000
+            Rendimiento = (IPeso/IEdad)*2000
         else:
             Rendimiento=0
 
@@ -229,6 +232,7 @@ def VGV(event):
         else:
             messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
         Botones()
+    
     def MostrarV0(event):
         GridV.delete(*GridV.get_children())
         try:
@@ -401,10 +405,9 @@ def VGC(event):
         IEdad = int(InEdad.get())
         IPeso = int(InPeso.get())
         IOreja = InNum.get()
-        if IEdad>18:
-            Rendimiento = (IPeso/IEdad)*20000
-        else:
-            Rendimiento=0
+        
+        Rendimiento = ((IPeso/3)-IPeso)*11000
+        
 
         if CoRaza.current() == 0:
             CRaza = 'San Pedreño'
@@ -429,6 +432,68 @@ def VGC(event):
             messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
         Botones()
         limpiar_campos()
+
+    def modificar():
+        seleccion = GridV.focus()
+        if seleccion:
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+
+            def guardar_modificaciones():
+                IEdad = int(InEdad.get())
+                IPeso = int(InPeso.get())
+                INum = InNum.get()
+                
+                Rendimiento = ((IPeso/3)-IPeso)*11000
+                if CoRaza.current() == 0:
+                    CRaza = 'San Pedreño'
+                if CoRaza.current() == 1:
+                    CRaza = 'Zungo'
+                if CoRaza.current() == 2:
+                    CRaza = 'Casco de Mula'
+                with cnn.cursor() as cur:
+                    sql = """Update GanadoV
+	                        set Raza =?, Edad=?, Peso=?,NOreja=?,Produccion=?,Especie=?
+	                        where NOreja =?"""
+                    cur.execute(sql,(CRaza,IEdad,IPeso,INum,Rendimiento,'Cerdo',nombre))
+                    Botones()
+                    limpiar_campos()
+                GridV.item(seleccion, values=(CRaza, IEdad, IPeso,INum ))
+                cnn.commit()
+                ventana_modificar.destroy()
+
+            ventana_modificar = tk.Toplevel()
+            ventana_modificar.title("Alerta")
+
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el animal ")
+            nuevo_nombre_label.grid(row=0, column=0)
+
+
+            guardar_button = tk.Button(ventana_modificar, text="Modificar", command=guardar_modificaciones)
+            guardar_button.grid(row=8, columnspan=2)
+
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo para modificar")
+    def eliminar():
+        seleccion = GridV.focus()
+        if seleccion: 
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+            try:
+                with cnn.cursor() as cur:
+                    sql = "DELETE FROM GanadoV WHERE NOreja = ?"
+                    cur.execute(sql, (nombre))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "animal eliminado exitosamente")
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el animal: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")    
+            Botones()
+            MostrarV0()
+    
 
     def MostrarV0(event):
         GridV.delete(*GridV.get_children())
@@ -549,9 +614,9 @@ def VGC(event):
     
     BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirCe)
     BtnA.place(relx=.87,rely=.15,)
-    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
+    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure',command=modificar)
     BtnM.place(relx=.87,rely=.4,)
-    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure')
+    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure',command=eliminar)
     BtnE.place(relx=.87,rely=.7)
     BtnAt = tk.Button(FrameAn,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasC)
     BtnAt.place(relx=.01,rely=.1)
@@ -591,7 +656,7 @@ def VGCa(event):
         IPeso = int(InPeso.get())
         IOreja = InNum.get()
         if IEdad>18:
-            Rendimiento = (IPeso/IEdad)*20000
+            Rendimiento = (IPeso/IEdad)*5000
         else:
             Rendimiento=0
 
@@ -621,6 +686,72 @@ def VGCa(event):
         Botones()
         limpiar_campos()
 
+    def modificar():
+        seleccion = GridV.focus()
+        if seleccion:
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+
+            def guardar_modificaciones():
+                IEdad = int(InEdad.get())
+                IPeso = int(InPeso.get())
+                INum = InNum.get()
+                if IEdad>18:
+                    Rendimiento = (IPeso/IEdad)*5000
+                else:
+                    Rendimiento=0
+                if CoRaza.current() == 0:
+                    CRaza = 'Saanen'
+                if CoRaza.current() == 1:
+                    CRaza = 'Toggenburg'
+                if CoRaza.current() == 2:
+                    CRaza = 'Alpina'
+                if CoRaza.current() == 3:
+                    CRaza = 'La Mancha'
+                with cnn.cursor() as cur:
+                    sql = """Update GanadoV
+	                        set Raza =?, Edad=?, Peso=?,NOreja=?,Produccion=?,Especie=?
+	                        where NOreja =?"""
+                    cur.execute(sql,(CRaza,IEdad,IPeso,INum,Rendimiento,'Cabra',nombre))
+                    Botones()
+                    limpiar_campos()
+                GridV.item(seleccion, values=(CRaza, IEdad, IPeso,INum ))
+                cnn.commit()
+                ventana_modificar.destroy()
+                Botones()
+                MostrarV0()
+
+            ventana_modificar = tk.Toplevel()
+            ventana_modificar.title("Alerta")
+
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el animal ")
+            nuevo_nombre_label.grid(row=0, column=0)
+
+
+            guardar_button = tk.Button(ventana_modificar, text="Modificar", command=guardar_modificaciones)
+            guardar_button.grid(row=8, columnspan=2)
+
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo para modificar")
+    def eliminar():
+        seleccion = GridV.focus()
+        if seleccion: 
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+            try:
+                with cnn.cursor() as cur:
+                    sql = "DELETE FROM GanadoV WHERE NOreja = ?"
+                    cur.execute(sql, (nombre))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "animal eliminado exitosamente")
+                    Botones()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el animal: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo")    
+        
     def Botones():
         with cnn.cursor() as cur:
                 cur.execute("SELECT * FROM GanadoV")
@@ -766,9 +897,9 @@ def VGCa(event):
     
     BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure', command=AnadirCa)
     BtnA.place(relx=.87,rely=.15,)
-    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
+    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure',command=modificar)
     BtnM.place(relx=.87,rely=.4,)
-    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure')
+    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure',command=eliminar)
     BtnE.place(relx=.87,rely=.7)
     BtnAt = tk.Button(FrameAn,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasCa)
     BtnAt.place(relx=.01,rely=.1)
@@ -808,8 +939,8 @@ def VGG(event):
         IEdad = int(InEdad.get())
         IPeso = int(InPeso.get())
         IOreja = InNum.get()
-        if IEdad>18:
-            Rendimiento = (IPeso/IEdad)*20000
+        if IEdad>12:
+            Rendimiento = (IEdad*24)*500
         else:
             Rendimiento=0
 
@@ -840,6 +971,74 @@ def VGG(event):
             messagebox.showwarning("Advertencia", "Por favor complete todos los campos")
         Botones()
         limpiar_campos()
+
+    def modificar():
+        seleccion = GridV.focus()
+        if seleccion:
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+
+            def guardar_modificaciones():
+                IEdad = int(InEdad.get())
+                IPeso = int(InPeso.get())
+                INum = InNum.get()
+                if IEdad>18:
+                    Rendimiento = (IEdad*24)*500
+                else:
+                    Rendimiento=0
+                if CoRaza.current() == 0:
+                    CRaza = 'Leghorn Blanca'
+                if CoRaza.current() == 1:
+                    CRaza = 'Rhode Island Roja'
+                if CoRaza.current() == 2:
+                    CRaza = 'New Hampshire'
+                if CoRaza.current() == 3:
+                    CRaza = 'Cornish'
+                if CoRaza.current() == 3:
+                    CRaza = 'Sussex Clara'
+                with cnn.cursor() as cur:
+                    sql = """Update GanadoV
+	                        set Raza =?, Edad=?, Peso=?,NOreja=?,Produccion=?,Especie=?
+	                        where NOreja =?"""
+                    cur.execute(sql,(CRaza,IEdad,IPeso,INum,Rendimiento,'Gallina',nombre))
+                    Botones()
+                    limpiar_campos()
+                GridV.item(seleccion, values=(CRaza, IEdad, IPeso,INum ))
+                cnn.commit()
+                ventana_modificar.destroy()
+                Botones()
+                MostrarV0()
+
+            ventana_modificar = tk.Toplevel()
+            ventana_modificar.title("Alerta")
+
+            nuevo_nombre_label = tk.Label(ventana_modificar, text="seguro que quiere modificar el animal ")
+            nuevo_nombre_label.grid(row=0, column=0)
+
+
+            guardar_button = tk.Button(ventana_modificar, text="Modificar", command=guardar_modificaciones)
+            guardar_button.grid(row=8, columnspan=2)
+
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo para modificar")
+    def eliminar():
+        seleccion = GridV.focus()
+        if seleccion: 
+            detalles_Cultivo = GridV.item(seleccion)
+            nombre = detalles_Cultivo['values']
+            nombre = nombre.pop(3)
+            try:
+                with cnn.cursor() as cur:
+                    sql = "DELETE FROM GanadoV WHERE NOreja = ?"
+                    cur.execute(sql, (nombre))
+                    cnn.commit()
+                    messagebox.showinfo("Éxito", "animal eliminado exitosamente")
+                    Botones()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el animal: {str(e)}")
+        else:
+            messagebox.showwarning("Advertencia", "Por favor seleccione un cultivo") 
 
     def Botones():
         with cnn.cursor() as cur:
@@ -1013,9 +1212,9 @@ def VGG(event):
     
     BtnA = tk.Button(FrameAn, text='Agregar',font=('Great Vibes', 15),bg='azure',command=AnadirGa)
     BtnA.place(relx=.87,rely=.15,)
-    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure')
+    BtnM = tk.Button(FrameAn, text='Modificar',font=('Great Vibes', 15),bg='azure',command=modificar)
     BtnM.place(relx=.87,rely=.4,)
-    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure')
+    BtnE = tk.Button(FrameAn, text='Eliminar',font=('Great Vibes', 15),bg='azure',command=eliminar)
     BtnE.place(relx=.87,rely=.7)
     BtnAt = tk.Button(FrameAn,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasGa)
     BtnAt.place(relx=.01,rely=.1)
@@ -1224,29 +1423,38 @@ def VTotal():
     ICultivo = ICultivo.resize((1020,800))
     ICultivo = ImageTk.PhotoImage(ICultivo)
 
-    ProTot=0
+    ProTotA=0
+    ProTotC=0
     with cnn.cursor() as cur:
         cur.execute("SELECT * FROM GanadoV")
         datos = cur.fetchall()
         for row in datos:
-            ProTot= ProTot+row[4]
+            ProTotA= ProTotA+row[4]
     with cnn.cursor() as cur:
         cur.execute("SELECT * FROM Cultivos")
         datos = cur.fetchall()
         for row in datos:
-            ProTot= ProTot+row[3]
+            ProTotC= ProTotC+row[3]
     LIF = tk.Label(FondoRe,bg='green4')
     LIF.place(relheight=1,relwidth=1)
     #####################################
     BtnAt = tk.Button(FondoRe,text='Atras',font=('Great Vibes', 15),bg='azure',command=AtrasRe)
     BtnAt.place(relx=.01,rely=.01)
     ######################
-
-    total = '$'+str(ProTot)
+    total =ProTotA+ProTotC
+    total = '$'+str(total)
     LT = tk.Label(FondoRe,text='Produccion Total de la granja',font=('Great Vibes', 50),bg='green4',anchor='center')
     LT.place(relwidth=1,rely=.1)
     LTP = tk.Label(FondoRe,text=total ,font=('Great Vibes', 100),bg='green4',anchor='center')
     LTP.place(relwidth=1,rely=.3)
+    LT1 = tk.Label(FondoRe,text='Produccion Total de animales',font=('Great Vibes', 25),bg='green4',anchor='center')
+    LT1.place(relwidth=.5,rely=.7,relx=.5)
+    LTP = tk.Label(FondoRe,text=ProTotA ,font=('Great Vibes', 50),bg='green4',anchor='center')
+    LTP.place(relwidth=.5,rely=.8, relx=.5)
+    LT2 = tk.Label(FondoRe,text='Produccion Total de cultivos',font=('Great Vibes', 25),bg='green4',anchor='center')
+    LT2.place(relwidth=.5,rely=.7,x=20)
+    LTP = tk.Label(FondoRe,text=ProTotC ,font=('Great Vibes', 50),bg='green4',anchor='center')
+    LTP.place(relwidth=.5,rely=.8,x=20)
     VPrincipal.mainloop()
 
 
